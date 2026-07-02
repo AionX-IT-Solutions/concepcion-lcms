@@ -12,15 +12,6 @@ initSentryMain()
 
 const isDev = !app.isPackaged
 
-// Some GPUs/drivers (seen on macOS in dev, e.g. "eglQueryDeviceAttribEXT: Bad
-// attribute") spam EGL errors from Chromium's GPU process. Must be called
-// before the app is ready. Scoped to dev only so packaged builds keep GPU
-// compositing (blur/animations rely on it) unless this turns out to affect
-// production too, in which case drop the isDev check.
-if (isDev) {
-  app.disableHardwareAcceleration()
-}
-
 // ── App icon ──────────────────────────────────────────────────────────────────
 // resources/icon.png is fed to electron-builder to generate platform icons at
 // build time (see electron-builder.yml), and copied via "extraResources" so
