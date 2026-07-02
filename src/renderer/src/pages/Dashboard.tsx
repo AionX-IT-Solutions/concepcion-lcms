@@ -853,9 +853,6 @@ export function Dashboard() {
           <Button variant="secondary" size="sm" leftIcon={<RefreshCw size={13} />}>
             Refresh
           </Button>
-          <Button variant="primary" size="sm" leftIcon={<Plus size={13} />}>
-            New Report
-          </Button>
         </div>
       </div>
 

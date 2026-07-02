@@ -17,6 +17,8 @@ win:
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
 mac:
   target:
     - target: dmg
@@ -26,6 +28,14 @@ mac:
   category: public.app-category.business
 dmg:
   artifactName: ${name}-${version}.${ext}
+  contents:
+    - type: file
+      x: 140
+      y: 220
+    - type: link
+      path: /Applications
+      x: 420
+      y: 220
 linux:
   target:
     - target: AppImage
