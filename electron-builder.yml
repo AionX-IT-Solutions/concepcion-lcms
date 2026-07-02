@@ -29,9 +29,12 @@ nsis:
 mac:
   target:
     - target: dmg
+      # Universal binary (Intel + Apple Silicon in one file) instead of
+      # separate x64/arm64 builds — avoids users needing to know their
+      # Mac's chip and picking the wrong installer (previously the x64 and
+      # arm64 DMGs shared one filename and silently overwrote each other).
       arch:
-        - x64
-        - arm64
+        - universal
   category: public.app-category.business
   # No Apple Developer ID certificate configured yet, so skip code signing
   # entirely instead of letting electron-builder search the keychain for one.
