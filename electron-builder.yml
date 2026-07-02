@@ -1,5 +1,6 @@
 appId: com.aionx.lcms
 productName: LCMS
+copyright: Copyright © 2026 Edwin A. Concepcion, Jr. Law Office
 directories:
   buildResources: resources
   output: dist
@@ -26,6 +27,12 @@ mac:
         - x64
         - arm64
   category: public.app-category.business
+  # No Apple Developer ID certificate configured yet, so skip code signing
+  # entirely instead of letting electron-builder search the keychain for one.
+  # Unsigned DMGs will trigger a Gatekeeper warning on first launch — users
+  # can right-click the app > Open to bypass it. See the "code signing" note
+  # in the build guide if you get a paid Apple Developer account later.
+  identity: null
 dmg:
   artifactName: ${name}-${version}.${ext}
   contents:

@@ -150,6 +150,9 @@ function createWindow(): void {
     transparent: true,
     backgroundColor: '#00000000',
     titleBarStyle: 'hidden',
+    // Center the native traffic lights inside the 40px custom TitleBar
+    // (see TitleBar.tsx) instead of Electron's default top-left inset.
+    trafficLightPosition: { x: 16, y: 12 },
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),

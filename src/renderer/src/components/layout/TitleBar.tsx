@@ -666,9 +666,10 @@ function NotificationBell() {
 // ─── TitleBar ─────────────────────────────────────────────────────────────────
 
 export function TitleBar() {
-  const { appVersion, minimize, maximize, close } = useElectron()
+  const { appVersion, minimize, maximize, close, platform } = useElectron()
   const theme = useAppStore((s) => s.theme)
   const isDark = theme === 'dark'
+  const isMac = platform === 'darwin'
 
   const containerStyle: ElectronStyle = {
     height: '40px',
@@ -683,7 +684,10 @@ export function TitleBar() {
     flexShrink: 0,
     WebkitAppRegion: 'drag',
     userSelect: 'none',
-    paddingLeft: '14px',
+    // macOS draws its native traffic-light buttons over the top-left of the
+    // window, so the title bar needs extra left padding on mac to keep
+    // content clear of them.
+    paddingLeft: isMac ? '78px' : '14px',
     paddingRight: '4px',
     position: 'relative',
     zIndex: 100
@@ -716,77 +720,84 @@ export function TitleBar() {
 
   return (
     <div style={containerStyle}>
-      {/* Left — App Name */}
-      <div style={logoAreaStyle}>
-        <span
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase'
-          }}
-        >
-          LCMS
-        </span>
-        <div
-          style={{
-            width: '1px',
-            height: '14px',
-            background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
-            marginLeft: '4px'
-          }}
-        />
-        <span
-          style={{
-            fontSize: '11px',
-            color: 'var(--text-muted)',
-            fontFamily: "'JetBrains Mono', monospace"
-          }}
-        >
-          v{appVersion}
-        </span>
-      </div>
+      {/* Left — App Name (hidden on macOS; the native traffic lights sit here instead) */}
+      {!isMac && (
+        <div style={logoAreaStyle}>
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase'
+            }}
+          >
+            LCMS
+          </span>
+          <div
+            style={{
+              width: '1px',
+              height: '14px',
+              background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+              marginLeft: '4px'
+            }}
+          />
+          <span
+            style={{
+              fontSize: '11px',
+              color: 'var(--text-muted)',
+              fontFamily: "'JetBrains Mono', monospace"
+            }}
+          >
+            v{appVersion}
+          </span>
+        </div>
+      )}
 
       {/* Center — Drag region */}
       <div style={{ flex: 1 }} />
 
-      {/* Right — Search + Bell + Theme + Window Controls */}
+      {/* Right — Search + Bell + Theme + Window Controls (min/max/close skipped on macOS) */}
       <div style={controlsStyle}>
         <SearchBar />
         <NotificationBell />
 
         {divider}
         <ThemeToggle />
-        {divider}
 
-        <WindowButton
-          onClick={minimize}
-          hoverColor="rgba(251,191,36,0.15)"
-          hoverGlow="rgba(251,191,36,0.5)"
-          title="Minimize"
-        >
-          <Minus size={12} />
-        </WindowButton>
+        {!isMac && (
+          <>
+            {divider}
 
-        <WindowButton
-          onClick={maximize}
-          hoverColor="rgba(34,197,94,0.15)"
-          hoverGlow="rgba(34,197,94,0.5)"
-          title="Maximize"
-        >
-          <Square size={10} />
-        </WindowButton>
+            <WindowButton
+              onClick={minimize}
+              hoverColor="rgba(251,191,36,0.15)"
+              hoverGlow="rgba(251,191,36,0.5)"
+              title="Minimize"
+            >
+              <Minus size={12} />
+            </WindowButton>
 
-        <WindowButton
-          onClick={close}
-          hoverColor="rgba(239,68,68,0.2)"
-          hoverGlow="rgba(239,68,68,0.5)"
-          title="Close"
-        >
-          <X size={13} />
-        </WindowButton>
+            <WindowButton
+              onClick={maximize}
+              hoverColor="rgba(34,197,94,0.15)"
+              hoverGlow="rgba(34,197,94,0.5)"
+              title="Maximize"
+            >
+              <Square size={10} />
+            </WindowButton>
+
+            <WindowButton
+              onClick={close}
+              hoverColor="rgba(239,68,68,0.2)"
+              hoverGlow="rgba(239,68,68,0.5)"
+              title="Close"
+            >
+              <X size={13} />
+            </WindowButton>
+          </>
+        )}
       </div>
     </div>
   )

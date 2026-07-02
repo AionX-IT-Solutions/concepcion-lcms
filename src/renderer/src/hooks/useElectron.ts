@@ -3,6 +3,12 @@ import type { UpdateStatus, NotificationPayload } from '../../../shared/ipc-type
 
 declare global {
   interface Window {
+    electron?: {
+      process: {
+        // eslint-disable-next-line no-undef
+        platform: NodeJS.Platform
+      }
+    }
     api: {
       getAppVersion: () => Promise<string>
       window: {
@@ -51,6 +57,7 @@ export function useElectron() {
   return {
     appVersion,
     isMaximized,
+    platform: window.electron?.process.platform,
     minimize: () => window.api?.window.minimize(),
     maximize: () => {
       window.api?.window.maximize()
