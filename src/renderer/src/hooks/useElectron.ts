@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import type { UpdateStatus, NotificationPayload } from '../../../shared/ipc-types'
 
+type NodePlatform = 'aix' | 'android' | 'darwin' | 'freebsd' | 'linux' | 'openbsd' | 'sunos' | 'win32' | 'cygwin' | 'netbsd'
+
 declare global {
   interface Window {
     electron?: {
       process: {
-        // eslint-disable-next-line no-undef
-        platform: NodeJS.Platform
+        platform: NodePlatform
       }
     }
     api: {

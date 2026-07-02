@@ -6,6 +6,12 @@ directories:
   output: dist
 files:
   - out/**/*
+# Single square source icon — electron-builder generates the .ico (Windows)
+# and .icns (macOS, all Retina sizes up to 1024x1024) from this at build
+# time, so both platforms stay in sync automatically. Source is currently
+# 256x256; swap in a 1024x1024 PNG here if the macOS Dock/Finder icon looks
+# soft at large sizes.
+icon: resources/icon.png
 extraResources:
   - resources/icon.png
 extraMetadata:

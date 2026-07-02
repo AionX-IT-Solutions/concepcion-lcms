@@ -5,8 +5,15 @@ function pad(n: number) {
   return String(n).padStart(2, '0')
 }
 
+function osLabel(platform: string | undefined) {
+  if (platform === 'darwin') return 'macOS'
+  if (platform === 'win32') return 'Windows'
+  if (platform === 'linux') return 'Linux'
+  return platform ?? 'Unknown'
+}
+
 export function StatusBar() {
-  const { appVersion } = useElectron()
+  const { appVersion, platform } = useElectron()
   const [time, setTime] = useState(() => {
     const now = new Date()
     return `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
@@ -85,26 +92,6 @@ export function StatusBar() {
         >
           v{appVersion}
         </span>
-
-        {/* Separator */}
-        <div
-          style={{
-            width: '1px',
-            height: '12px',
-            background: 'rgba(255,255,255,0.08)'
-          }}
-        />
-
-        {/* Build label */}
-        <span
-          style={{
-            fontSize: '10px',
-            color: 'var(--text-muted)',
-            fontFamily: "'JetBrains Mono', monospace"
-          }}
-        >
-          electron-vite
-        </span>
       </div>
 
       {/* Right side */}
@@ -117,7 +104,7 @@ export function StatusBar() {
             fontFamily: "'JetBrains Mono', monospace"
           }}
         >
-          Windows
+          {osLabel(platform)}
         </span>
 
         {/* Separator */}

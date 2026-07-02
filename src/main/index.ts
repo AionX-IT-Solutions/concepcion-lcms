@@ -12,11 +12,21 @@ initSentryMain()
 
 const isDev = !app.isPackaged
 
+// Some GPUs/drivers (seen on macOS in dev, e.g. "eglQueryDeviceAttribEXT: Bad
+// attribute") spam EGL errors from Chromium's GPU process. Must be called
+// before the app is ready. Scoped to dev only so packaged builds keep GPU
+// compositing (blur/animations rely on it) unless this turns out to affect
+// production too, in which case drop the isDev check.
+if (isDev) {
+  app.disableHardwareAcceleration()
+}
+
 // ── App icon ──────────────────────────────────────────────────────────────────
 // resources/icon.png is fed to electron-builder to generate platform icons at
-// build time (see package.json "build"), and copied via "extraResources" so it's
-// also available at runtime (packaged apps read from process.resourcesPath; in
-// dev the source tree is used directly since out/main sits next to resources/).
+// build time (see electron-builder.yml), and copied via "extraResources" so
+// it's also available at runtime (packaged apps read from
+// process.resourcesPath; in dev the source tree is used directly since
+// out/main sits next to resources/).
 const iconPath = isDev
   ? join(__dirname, '../../resources/icon.png')
   : join(process.resourcesPath, 'icon.png')
@@ -146,13 +156,12 @@ function createWindow(): void {
     minHeight: 600,
     show: false,
     icon: appIcon,
+    // frame: false alone (without titleBarStyle) gives a fully chromeless
+    // window on every platform, including macOS — no native traffic lights,
+    // since the custom TitleBar draws its own minimize/maximize/close.
     frame: false,
     transparent: true,
     backgroundColor: '#00000000',
-    titleBarStyle: 'hidden',
-    // Center the native traffic lights inside the 40px custom TitleBar
-    // (see TitleBar.tsx) instead of Electron's default top-left inset.
-    trafficLightPosition: { x: 16, y: 12 },
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -197,6 +206,15 @@ function createWindow(): void {
 app.whenReady().then(() => {
   if (process.platform === 'win32') {
     app.setAppUserModelId(isDev ? process.execPath : 'com.aionx.boilerplate')
+  }
+
+  // BrowserWindow's `icon` option (set in createWindow) only covers the
+  // taskbar icon on Windows/Linux. On macOS the Dock icon in dev mode
+  // otherwise falls back to Electron's default icon — packaged builds get
+  // the right one automatically from the app bundle's Info.plist, but dev
+  // needs this explicit call.
+  if (process.platform === 'darwin' && app.dock) {
+    app.dock.setIcon(appIcon)
   }
 
   app.on('browser-window-created', (_, window) => {
