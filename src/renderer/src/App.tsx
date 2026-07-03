@@ -332,7 +332,8 @@ function AuthenticatedShell() {
             </AnimatePresence>
           </main>
         </div>
-        <StatusBar />
+        {/* macOS keeps its window chrome minimal — no bottom status bar */}
+        {!isMac && <StatusBar />}
       </div>
     </div>
   )

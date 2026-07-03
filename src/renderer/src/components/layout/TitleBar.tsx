@@ -719,38 +719,41 @@ export function TitleBar() {
 
   return (
     <div style={containerStyle}>
-      {/* Left — App Name */}
-      <div style={logoAreaStyle}>
-        <span
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase'
-          }}
-        >
-          LCMS
-        </span>
-        <div
-          style={{
-            width: '1px',
-            height: '14px',
-            background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
-            marginLeft: '4px'
-          }}
-        />
-        <span
-          style={{
-            fontSize: '11px',
-            color: 'var(--text-muted)',
-            fontFamily: "'JetBrains Mono', monospace"
-          }}
-        >
-          v{appVersion}
-        </span>
-      </div>
+      {/* Left — App Name (Windows/Linux only — macOS shows this in the
+          full-height Sidebar header instead, next to the traffic lights) */}
+      {!isMac && (
+        <div style={logoAreaStyle}>
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase'
+            }}
+          >
+            LCMS
+          </span>
+          <div
+            style={{
+              width: '1px',
+              height: '14px',
+              background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+              marginLeft: '4px'
+            }}
+          />
+          <span
+            style={{
+              fontSize: '11px',
+              color: 'var(--text-muted)',
+              fontFamily: "'JetBrains Mono', monospace"
+            }}
+          >
+            v{appVersion}
+          </span>
+        </div>
+      )}
 
       {/* Center — Drag region */}
       <div style={{ flex: 1 }} />
