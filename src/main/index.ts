@@ -147,10 +147,15 @@ function createWindow(): void {
     minHeight: 600,
     show: false,
     icon: appIcon,
-    // frame: false alone (without titleBarStyle) gives a fully chromeless
-    // window on every platform, including macOS — no native traffic lights,
-    // since the custom TitleBar draws its own minimize/maximize/close.
-    frame: false,
+    // On macOS keep the native traffic lights (via titleBarStyle) instead of
+    // frame: false, which would suppress them entirely. Other platforms stay
+    // fully chromeless and rely on the custom TitleBar's own buttons.
+    // The traffic light position is tuned to sit inside the Sidebar's
+    // top drag strip (see Sidebar.tsx), since the sidebar spans full height
+    // on macOS and the TitleBar only covers the content column beside it.
+    ...(process.platform === 'darwin'
+      ? { titleBarStyle: 'hiddenInset' as const, trafficLightPosition: { x: 16, y: 11 } }
+      : { frame: false }),
     transparent: true,
     backgroundColor: '#00000000',
     autoHideMenuBar: true,

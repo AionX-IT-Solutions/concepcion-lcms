@@ -666,9 +666,10 @@ function NotificationBell() {
 // ─── TitleBar ─────────────────────────────────────────────────────────────────
 
 export function TitleBar() {
-  const { appVersion, minimize, maximize, close } = useElectron()
+  const { appVersion, platform, minimize, maximize, close } = useElectron()
   const theme = useAppStore((s) => s.theme)
   const isDark = theme === 'dark'
+  const isMac = platform === 'darwin'
 
   const containerStyle: ElectronStyle = {
     height: '40px',
@@ -683,6 +684,8 @@ export function TitleBar() {
     flexShrink: 0,
     WebkitAppRegion: 'drag',
     userSelect: 'none',
+    // On macOS the traffic lights live in the Sidebar header (which now spans
+    // full height), so this bar only needs its normal padding.
     paddingLeft: '14px',
     paddingRight: '4px',
     position: 'relative',
@@ -759,34 +762,42 @@ export function TitleBar() {
 
         {divider}
         <ThemeToggle />
-        {divider}
 
-        <WindowButton
-          onClick={minimize}
-          hoverColor="rgba(251,191,36,0.15)"
-          hoverGlow="rgba(251,191,36,0.5)"
-          title="Minimize"
-        >
-          <Minus size={12} />
-        </WindowButton>
+        {/* macOS already has native traffic lights (minimize/maximize/close) via
+            titleBarStyle: 'hiddenInset' in the main process, so the custom
+            window buttons are only rendered on Windows/Linux. */}
+        {!isMac && (
+          <>
+            {divider}
 
-        <WindowButton
-          onClick={maximize}
-          hoverColor="rgba(34,197,94,0.15)"
-          hoverGlow="rgba(34,197,94,0.5)"
-          title="Maximize"
-        >
-          <Square size={10} />
-        </WindowButton>
+            <WindowButton
+              onClick={minimize}
+              hoverColor="rgba(251,191,36,0.15)"
+              hoverGlow="rgba(251,191,36,0.5)"
+              title="Minimize"
+            >
+              <Minus size={12} />
+            </WindowButton>
 
-        <WindowButton
-          onClick={close}
-          hoverColor="rgba(239,68,68,0.2)"
-          hoverGlow="rgba(239,68,68,0.5)"
-          title="Close"
-        >
-          <X size={13} />
-        </WindowButton>
+            <WindowButton
+              onClick={maximize}
+              hoverColor="rgba(34,197,94,0.15)"
+              hoverGlow="rgba(34,197,94,0.5)"
+              title="Maximize"
+            >
+              <Square size={10} />
+            </WindowButton>
+
+            <WindowButton
+              onClick={close}
+              hoverColor="rgba(239,68,68,0.2)"
+              hoverGlow="rgba(239,68,68,0.5)"
+              title="Close"
+            >
+              <X size={13} />
+            </WindowButton>
+          </>
+        )}
       </div>
     </div>
   )

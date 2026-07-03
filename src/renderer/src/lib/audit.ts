@@ -44,6 +44,17 @@ export function getAuditUserDisplayName(): string | null {
 }
 
 /**
+ * Kept in sync by `usePermissionsSync` from the signed-in user's role
+ * (`Role.isSystemDeveloper`). Developer accounts bypass every permission
+ * check app-wide, so their actions are exempt from the audit trail too.
+ */
+let cachedIsSystemDeveloper = false
+
+export function setAuditIsSystemDeveloper(value: boolean): void {
+  cachedIsSystemDeveloper = value
+}
+
+/**
  * Fire-and-forget audit trail write. Failures are swallowed (logged only) so a
  * write hiccup here never blocks the underlying user action from completing.
  */
@@ -55,6 +66,8 @@ export async function logAudit(entry: {
   /** Overrides the acting user — needed when the account is already signed out by write time. */
   userOverride?: string
 }): Promise<void> {
+  if (cachedIsSystemDeveloper) return
+
   const user = auth.currentUser
   const userLabel =
     entry.userOverride || cachedDisplayName || user?.displayName || user?.email || 'Unknown user'

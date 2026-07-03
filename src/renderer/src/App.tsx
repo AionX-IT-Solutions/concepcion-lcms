@@ -13,6 +13,7 @@ import { useUpdateStatus } from './hooks/useUpdateStatus'
 import { useFirebaseAuth } from './hooks/useFirebaseAuth'
 import { useLcmsSync } from './hooks/useLcmsSync'
 import { usePermissionsSync } from './hooks/usePermissionsSync'
+import { useElectron } from './hooks/useElectron'
 import { RequirePermission } from './components/layout/RequirePermission'
 import { useAppStore } from './store/app.store'
 import { useLcmsStore } from './store/lcms.store'
@@ -120,212 +121,219 @@ function useAutoNotifications() {
 
 function AuthenticatedShell() {
   useAutoNotifications()
+  const { platform } = useElectron()
+  const isMac = platform === 'darwin'
 
   return (
-    <div className="app-shell">
-      <TitleBar />
-      <div className="app-body">
-        <Sidebar />
-        <main className="app-content">
-          <Breadcrumb />
-          <AnimatePresence mode="wait">
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route
-                  path="/clients"
-                  element={
-                    <RequirePermission permission="view:clients">
-                      <Clients />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/clients/:clientId"
-                  element={
-                    <RequirePermission permission="view:clients">
-                      <ClientDetail />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/clients/:clientId/cases/:caseId"
-                  element={
-                    <RequirePermission permission="view:cases">
-                      <CaseDetail />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/cases"
-                  element={
-                    <RequirePermission permission="view:cases">
-                      <Cases />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/hearings"
-                  element={
-                    <RequirePermission permission="view:cases">
-                      <Hearings />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/calendar"
-                  element={
-                    <RequirePermission permission="view:cases">
-                      <Calendar />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/tasks"
-                  element={
-                    <RequirePermission permission="view:cases">
-                      <Tasks />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/documents"
-                  element={
-                    <RequirePermission permission="view:documents">
-                      <Documents />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/billing"
-                  element={
-                    <RequirePermission permission="view:billing">
-                      <BillingOverview />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/evidence"
-                  element={
-                    <RequirePermission permission="view:cases">
-                      <EvidenceManagement />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/legal-research"
-                  element={
-                    <RequirePermission permission="view:cases">
-                      <LegalResearch />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/contracts"
-                  element={
-                    <RequirePermission permission="view:documents">
-                      <Contracts />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/affidavits"
-                  element={
-                    <RequirePermission permission="view:documents">
-                      <Affidavits />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/pleadings"
-                  element={
-                    <RequirePermission permission="view:documents">
-                      <Pleadings />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/motions"
-                  element={
-                    <RequirePermission permission="view:documents">
-                      <Motions />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/court-orders"
-                  element={
-                    <RequirePermission permission="view:documents">
-                      <CourtOrders />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/trust-accounts"
-                  element={
-                    <RequirePermission permission="view:billing">
-                      <TrustAccounts />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/expenses"
-                  element={
-                    <RequirePermission permission="view:billing">
-                      <ExpenseTracking />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/audit-trail"
-                  element={
-                    <RequirePermission permission="view:reports">
-                      <AuditTrail />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/reports"
-                  element={
-                    <RequirePermission permission="view:reports">
-                      <Reports />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/role-access"
-                  element={
-                    <RequirePermission permission="manage:users">
-                      <RoleAccess />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/lawyers"
-                  element={
-                    <RequirePermission permission="manage:settings">
-                      <Lawyers />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="/branches"
-                  element={
-                    <RequirePermission permission="manage:settings">
-                      <Branches />
-                    </RequirePermission>
-                  }
-                />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/about" element={<About />} />
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </Suspense>
-          </AnimatePresence>
-        </main>
+    <div className={isMac ? 'app-shell app-shell--mac' : 'app-shell'}>
+      {/* On macOS the sidebar spans the full window height (top to bottom),
+          so it sits outside the TitleBar's row instead of below it. */}
+      {isMac && <Sidebar />}
+      <div className="app-main-column">
+        <TitleBar />
+        <div className="app-body">
+          {!isMac && <Sidebar />}
+          <main className="app-content">
+            <Breadcrumb />
+            <AnimatePresence mode="wait">
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route
+                    path="/clients"
+                    element={
+                      <RequirePermission permission="view:clients">
+                        <Clients />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/clients/:clientId"
+                    element={
+                      <RequirePermission permission="view:clients">
+                        <ClientDetail />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/clients/:clientId/cases/:caseId"
+                    element={
+                      <RequirePermission permission="view:cases">
+                        <CaseDetail />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/cases"
+                    element={
+                      <RequirePermission permission="view:cases">
+                        <Cases />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/hearings"
+                    element={
+                      <RequirePermission permission="view:cases">
+                        <Hearings />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/calendar"
+                    element={
+                      <RequirePermission permission="view:cases">
+                        <Calendar />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/tasks"
+                    element={
+                      <RequirePermission permission="view:cases">
+                        <Tasks />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/documents"
+                    element={
+                      <RequirePermission permission="view:documents">
+                        <Documents />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/billing"
+                    element={
+                      <RequirePermission permission="view:billing">
+                        <BillingOverview />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/evidence"
+                    element={
+                      <RequirePermission permission="view:cases">
+                        <EvidenceManagement />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/legal-research"
+                    element={
+                      <RequirePermission permission="view:cases">
+                        <LegalResearch />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/contracts"
+                    element={
+                      <RequirePermission permission="view:documents">
+                        <Contracts />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/affidavits"
+                    element={
+                      <RequirePermission permission="view:documents">
+                        <Affidavits />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/pleadings"
+                    element={
+                      <RequirePermission permission="view:documents">
+                        <Pleadings />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/motions"
+                    element={
+                      <RequirePermission permission="view:documents">
+                        <Motions />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/court-orders"
+                    element={
+                      <RequirePermission permission="view:documents">
+                        <CourtOrders />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/trust-accounts"
+                    element={
+                      <RequirePermission permission="view:billing">
+                        <TrustAccounts />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/expenses"
+                    element={
+                      <RequirePermission permission="view:billing">
+                        <ExpenseTracking />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/audit-trail"
+                    element={
+                      <RequirePermission permission="view:reports">
+                        <AuditTrail />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/reports"
+                    element={
+                      <RequirePermission permission="view:reports">
+                        <Reports />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/role-access"
+                    element={
+                      <RequirePermission permission="manage:users">
+                        <RoleAccess />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/lawyers"
+                    element={
+                      <RequirePermission permission="manage:settings">
+                        <Lawyers />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/branches"
+                    element={
+                      <RequirePermission permission="manage:settings">
+                        <Branches />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </Suspense>
+            </AnimatePresence>
+          </main>
+        </div>
+        <StatusBar />
       </div>
-      <StatusBar />
     </div>
   )
 }

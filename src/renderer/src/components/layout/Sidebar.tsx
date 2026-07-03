@@ -2,12 +2,15 @@ import { motion } from 'framer-motion'
 import { Settings, Info, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../../store/app.store'
-import { useState, type ReactNode } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import { Tooltip } from '../ui/Tooltip'
 import { ConfirmDialog } from '../ui/ConfirmDialog'
 import { MODULE_GROUPS, MODULES } from '../../config/modules'
 import { initialsOf } from '../../lib/utils'
 import { usePermissions } from '../../hooks/usePermissions'
+import { useElectron } from '../../hooks/useElectron'
+
+type ElectronStyle = CSSProperties & { WebkitAppRegion?: 'drag' | 'no-drag' }
 
 interface NavItem {
   path: string
@@ -110,6 +113,8 @@ export function Sidebar() {
   const logout = useAppStore((s) => s.logout)
   const currentUser = useAppStore((s) => s.currentUser)
   const { hasPermission } = usePermissions()
+  const { platform } = useElectron()
+  const isMac = platform === 'darwin'
   const navigate = useNavigate()
   const location = useLocation()
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
@@ -155,7 +160,7 @@ export function Sidebar() {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 64 : 270 }}
+      animate={{ width: collapsed ? (isMac ? 80 : 64) : 270 }}
       transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
       style={{
         height: '100%',
@@ -172,6 +177,22 @@ export function Sidebar() {
         zIndex: 10
       }}
     >
+      {/* ── macOS traffic-light strip — sidebar spans the full window
+          height on Mac, so this reserves room for the native
+          minimize/maximize/close buttons (see trafficLightPosition
+          in src/main/index.ts) above the regular header. ────────── */}
+      {isMac && (
+        <div
+          style={
+            {
+              height: '34px',
+              flexShrink: 0,
+              WebkitAppRegion: 'drag'
+            } as ElectronStyle
+          }
+        />
+      )}
+
       {/* ── Header: Logo + Title + Collapse btn ─────────────────── */}
       <div
         style={{
