@@ -41,7 +41,7 @@ declare global {
 }
 
 export function useElectron() {
-  const [appVersion, setAppVersion] = useState<string>('1.0.0')
+  const [appVersion, setAppVersion] = useState<string>('1.0.1')
   const [isMaximized, setIsMaximized] = useState(false)
 
   useEffect(() => {

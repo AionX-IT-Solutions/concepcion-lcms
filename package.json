@@ -1,6 +1,6 @@
 {
   "name": "lcms",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LCMS — Legal Case Management System for Edwin A. Concepcion, Jr. Law Office",
   "main": "out/main/index.js",
   "author": "AionX IT Solutions",
