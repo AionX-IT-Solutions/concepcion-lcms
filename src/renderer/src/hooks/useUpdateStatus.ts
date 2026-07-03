@@ -14,19 +14,20 @@ export function useUpdateStatus() {
 
       if (status.status === 'available') {
         const msg = status.version
-          ? `Update v${status.version} available`
-          : 'A new update is available'
+          ? `Update v${status.version} is downloading...`
+          : 'A new update is downloading...'
         addNotification({ type: 'info', message: msg })
         if (updateNotifs && notificationsEnabled) {
-          toast.info(msg, { duration: 6000 })
+          toast(msg, { icon: '⬇️', duration: 5000 })
         }
       } else if (status.status === 'downloaded') {
-        const msg = 'Update ready — restart to install'
+        const msg = 'Update ready to install.'
         addNotification({ type: 'success', message: msg })
         if (updateNotifs && notificationsEnabled) {
-          toast.success(msg, {
-            duration: 0,
-            action: { label: 'Restart now', onClick: () => window.api?.update.install() }
+          toast(msg, {
+            icon: '✅',
+            duration: Infinity,
+            action: { label: 'Restart & Update', onClick: () => window.api?.update.install() }
           })
         }
       }
