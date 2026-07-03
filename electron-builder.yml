@@ -8,9 +8,10 @@ files:
   - out/**/*
 # Single square source icon — electron-builder generates the .ico (Windows)
 # and .icns (macOS, all Retina sizes up to 1024x1024) from this at build
-# time, so both platforms stay in sync automatically. Source is currently
-# 256x256; swap in a 1024x1024 PNG here if the macOS Dock/Finder icon looks
-# soft at large sizes.
+# time, so both platforms stay in sync automatically. 1024x1024, but it's a
+# bilinear upscale of the original 256x256 art (see icon.256.bak.png) — swap
+# in real 1024x1024 source art here once a designer provides one, since mac
+# builds require at least 512x512 to generate the full .icns size range.
 icon: resources/icon.png
 extraResources:
   - resources/icon.png
