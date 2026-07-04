@@ -29,7 +29,7 @@ desktop.ini
 *.sw?
 
 # Env
-
+.env
 .env.local
 .env.*.local
 
